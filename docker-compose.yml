@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: "postgres:15-alpine"
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: demo_user
+      POSTGRES_PASSWORD: demo_password
+      POSTGRES_DB: demo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+  kafka:
+    image: "docker.redpanda.com/redpandadata/redpanda:v23.1.5"
+    container_name: local_kafka
+    platform: linux/amd64
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp 1
+      - --memory 1G
+      - --kafka-addr plaintext://0.0.0.0:29092,outside://0.0.0.0:9092
+      - --advertise-kafka-addr plaintext://kafka:29092,outside://localhost:9092
+    ports:
+      - "9092:9092"
+      - "8082:8082" # 👈 FIXED: Expose the REST Proxy port to your host Mac network
+
+  redis:
+    image: "redis:7-alpine"
+    container_name: local_redis
+    ports:
+      - "6379:6379"
+  localstack:
+    image: "localstack/localstack:4.4.0"
+    container_name: localstack_aws
+    platform: linux/amd64
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment: 
+      # FIXED: Added sqs to the active service registration list
+      - SERVICES=iam,lambda,sqs
+      - LAMBDA_DOCKER_NETWORK=demo-project_default
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
