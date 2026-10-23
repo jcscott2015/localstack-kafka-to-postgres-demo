@@ -1,0 +1,21 @@
+{
+  "name": "demo-kafka-postgres-lambda",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Local emulated Lambda processing Kafka events into PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.1135.0",
+    "@smithy/node-http-handler": "^4.12.1",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.11.3",
+    "redis": "^6.2.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "vitest": "^2.0.0"
+  }
+}
